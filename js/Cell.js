@@ -3,9 +3,33 @@
 
   window.Cell = (function() {
 
-    function Cell() {
-      console.log('cell');
+    function Cell(parents, callback) {
+      var i, _i;
+      if (parents == null) {
+        parents = null;
+      }
+      if (callback == null) {
+        callback = null;
+      }
+      this.color = [0, 0, 0];
+      if (parents != null) {
+        this.color[0] = Math.round((parents[0].color[0] + parents[1].color[0] + parents[2].color[0]) / 3);
+        this.color[1] = Math.round((parents[0].color[1] + parents[1].color[1] + parents[2].color[1]) / 3);
+        this.color[2] = Math.round((parents[0].color[2] + parents[1].color[2] + parents[2].color[2]) / 3);
+      } else {
+        for (i = _i = 0; _i <= 2; i = ++_i) {
+          this.color[i] = Math.round(Math.random() * 250);
+        }
+      }
+      if (callback != null) {
+        callback();
+      }
     }
+
+    Cell.prototype.draw = function(ctx, i, j, s) {
+      ctx.fillStyle = "rgb(" + this.color[0] + ", " + this.color[1] + ", " + this.color[2] + ")";
+      return ctx.fillRect(i * s, j * s, s, s);
+    };
 
     return Cell;
 

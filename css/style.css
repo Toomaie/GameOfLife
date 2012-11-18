@@ -78,20 +78,12 @@ a:hover { color: #036; }
 /**
  * Primary styles
  *
- * Author: 
+ * Author: Tom
  */
 
-
-
-
-
-
-
-
-
-
-
-
+ html, body {
+  overflow:hidden;
+ }
 
 
 .ir { display: block; text-indent: -999em; overflow: hidden; background-repeat: no-repeat; text-align: left; direction: ltr; }

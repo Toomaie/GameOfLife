@@ -3,89 +3,74 @@
 
   window.Canvas = (function() {
 
-    function Canvas(id) {
-      var i, j, temp, val, _i, _j, _ref, _ref1;
+    function Canvas(id, pixelSize, rand) {
+      var cell, i, j, temp, val, _i, _j, _ref, _ref1;
       this.id = id;
+      this.pixelSize = pixelSize != null ? pixelSize : 5;
+      this.rand = rand != null ? rand : 0.8;
       this.canvas = document.getElementById(this.id);
       this.context = this.canvas.getContext('2d');
-      this.pixelSize = 10;
       this.width = this.canvas.width / this.pixelSize;
       this.height = this.canvas.height / this.pixelSize;
       this.map = [];
-      this.nextMap = null;
+      this.context.fillStyle = 'white';
+      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
       for (i = _i = 0, _ref = this.width; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         temp = [];
         for (j = _j = 0, _ref1 = this.height; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
-          val = Math.random() >= 0.79 ? 1 : 0;
-          temp.push(val);
+          val = Math.random() >= this.rand ? 1 : 0;
+          if (val === 1) {
+            cell = new Cell();
+            cell.draw(this.context, i, j, this.pixelSize);
+          } else {
+            cell = null;
+          }
+          temp.push(cell);
         }
         this.map.push(temp);
       }
-      this.drawMap();
     }
 
-    Canvas.prototype.drawMap = function() {
-      var i, j, _i, _ref, _results;
-      this.context.fillStyle = 'white';
-      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-      this.context.fillStyle = 'black';
-      _results = [];
-      for (i = _i = 0, _ref = this.width; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-        _results.push((function() {
-          var _j, _ref1, _results1;
-          _results1 = [];
-          for (j = _j = 0, _ref1 = this.height; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
-            if (this.map[i][j] === 1) {
-              _results1.push(this.context.fillRect(i * this.pixelSize, j * this.pixelSize, this.pixelSize, this.pixelSize));
-            } else {
-              _results1.push(void 0);
-            }
-          }
-          return _results1;
-        }).call(this));
-      }
-      return _results;
-    };
-
     Canvas.prototype.nextStep = function() {
-      var i, j, neighbours, temp, _i, _j, _ref, _ref1;
+      var cell, i, j, neighbours, nextMap, parents, temp, _i, _j, _ref, _ref1;
       this.context.fillStyle = 'white';
       this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-      this.context.fillStyle = 'black';
-      this.nextMap = [];
+      nextMap = [];
       for (i = _i = 0, _ref = this.width; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         temp = [];
         for (j = _j = 0, _ref1 = this.height; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
-          neighbours = this.lookAround(i, j);
-          if (neighbours === 2 && this.map[i][j] === 1) {
-            this.context.fillRect(i * this.pixelSize, j * this.pixelSize, this.pixelSize, this.pixelSize);
-            temp.push(1);
-          } else if (neighbours === 3) {
-            this.context.fillRect(i * this.pixelSize, j * this.pixelSize, this.pixelSize, this.pixelSize);
-            temp.push(1);
+          parents = this.lookAround(i, j);
+          neighbours = parents.length;
+          if ((neighbours === 2 || neighbours === 3) && (this.map[i][j] != null)) {
+            this.map[i][j].draw(this.context, i, j, this.pixelSize);
+            temp.push(this.map[i][j]);
+          } else if (neighbours === 3 && !(this.map[i][j] != null)) {
+            cell = new Cell(parents);
+            cell.draw(this.context, i, j, this.pixelSize);
+            temp.push(cell);
           } else {
-            temp.push(0);
+            temp.push(null);
           }
         }
-        this.nextMap.push(temp);
+        nextMap.push(temp);
       }
-      this.map = this.nextMap.slice(0);
-      return this.nextMap = [];
+      this.map = nextMap.slice(0);
+      return nextMap = null;
     };
 
     Canvas.prototype.lookAround = function(x, y) {
-      var i, j, val, _i, _j;
-      val = 0;
+      var i, j, parents, _i, _j;
+      parents = [];
       for (i = _i = -1; _i <= 1; i = ++_i) {
         for (j = _j = -1; _j <= 1; j = ++_j) {
           if (!(i === 0 && j === 0) && x + i >= 0 && x + i <= this.width && y + j >= 0 && y + j <= this.height) {
-            if (this.map[x + i][y + j] === 1) {
-              val++;
+            if (this.map[x + i][y + j] != null) {
+              parents.push(this.map[x + i][y + j]);
             }
           }
         }
       }
-      return val;
+      return parents;
     };
 
     return Canvas;

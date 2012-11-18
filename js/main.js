@@ -2,9 +2,12 @@
 (function() {
 
   $(function() {
-    var canvas, main;
+    var c, canvas, main;
     window.Canvas = Canvas;
     window.Cell = Cell;
+    c = document.getElementById('c');
+    c.width = document.width;
+    c.height = document.height;
     canvas = new Canvas('c');
     main = function() {
       return canvas.nextStep();

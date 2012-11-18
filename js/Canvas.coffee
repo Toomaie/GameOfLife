@@ -1,73 +1,65 @@
 class window.Canvas
-    constructor: (@id) ->
+    constructor: (@id, @pixelSize=5, @rand=0.8) ->
         @canvas = document.getElementById @id
         @context = @canvas.getContext '2d'
 
-        @pixelSize = 10
         @width = @canvas.width / @pixelSize
         @height = @canvas.height / @pixelSize
 
         @map = []
-        @nextMap = null
+
+        @context.fillStyle = 'white'
+        @context.fillRect 0, 0, @canvas.width, @canvas.height
+        
         for i in [0..@width]
             temp = []
             for j in [0..@height]
-                val = if Math.random() >= 0.79 then 1 else 0
-                temp.push val
+                val = if Math.random() >= @rand then 1 else 0
+                if val == 1
+                    cell = new Cell()
+                    cell.draw @context, i, j, @pixelSize
+                else
+                    cell = null
+
+                temp.push cell
 
             @map.push temp
-
-        @drawMap()
-
-    drawMap: () ->
-        # First, we blank the map
-        @context.fillStyle = 'white'
-        @context.fillRect 0, 0, @canvas.width, @canvas.height
-
-        @context.fillStyle = 'black'
-        for i in [0..@width]
-            for j in [0..@height]
-                if @map[i][j] == 1
-                    @context.fillRect i*@pixelSize, j*@pixelSize, @pixelSize, @pixelSize
 
     nextStep: () ->
         # First, we blank the map
         @context.fillStyle = 'white'
         @context.fillRect 0, 0, @canvas.width, @canvas.height
 
-        @context.fillStyle = 'black'
-
-        @nextMap = []
+        nextMap = []
         for i in [0..@width]
             temp = []
             for j in [0..@height]
-                neighbours = @lookAround i, j
+                parents = @lookAround i, j
+                neighbours = parents.length
                 
-                if neighbours == 2 && @map[i][j] == 1
-                    @context.fillRect i*@pixelSize, j*@pixelSize, @pixelSize, @pixelSize
-                    temp.push 1
-                else if neighbours == 3
-                    @context.fillRect i*@pixelSize, j*@pixelSize, @pixelSize, @pixelSize
-                    temp.push 1
+                if (neighbours == 2 || neighbours == 3) && @map[i][j]?
+                    @map[i][j].draw @context, i, j, @pixelSize
+                    
+                    temp.push @map[i][j]
+                else if neighbours == 3 && not @map[i][j]?
+                    cell = new Cell parents
+                    cell.draw @context, i, j, @pixelSize
+
+                    temp.push cell
                 else
-                    temp.push 0
+                    temp.push null
 
-            @nextMap.push temp
+            nextMap.push temp
 
-        @map = @nextMap.slice 0
-        @nextMap = []
+        @map = nextMap.slice 0
+        nextMap = null
 
     lookAround: (x, y) ->
-        val = 0
+        parents = []
         for i in [-1..1]
             for j in [-1..1]
-                
-                    
-                               
                 if !(i==0 && j==0) && x+i >= 0 && x+i <= @width && y+j >=0 && y+j <= @height
-                    
-                    if @map[x+i][y+j] == 1
-                        val++
+                    if @map[x+i][y+j]?
+                        parents.push @map[x+i][y+j]
 
-        return val
-
+        return parents
