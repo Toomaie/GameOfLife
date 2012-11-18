@@ -13,9 +13,7 @@
       }
       this.color = [0, 0, 0];
       if (parents != null) {
-        this.color[0] = Math.round((parents[0].color[0] + parents[1].color[0] + parents[2].color[0]) / 3);
-        this.color[1] = Math.round((parents[0].color[1] + parents[1].color[1] + parents[2].color[1]) / 3);
-        this.color[2] = Math.round((parents[0].color[2] + parents[1].color[2] + parents[2].color[2]) / 3);
+        this.heuristic("lowest", parents);
       } else {
         for (i = _i = 0; _i <= 2; i = ++_i) {
           this.color[i] = Math.round(Math.random() * 250);
@@ -29,6 +27,54 @@
     Cell.prototype.draw = function(ctx, i, j, s) {
       ctx.fillStyle = "rgb(" + this.color[0] + ", " + this.color[1] + ", " + this.color[2] + ")";
       return ctx.fillRect(i * s, j * s, s, s);
+    };
+
+    Cell.prototype.heuristic = function(choice, parents) {
+      var parent, score, temp, _i, _j, _len, _len1, _results, _results1;
+      switch (choice) {
+        case "simple":
+          return this.color = parents[0].color;
+        case "average":
+          this.color[0] = Math.round((parents[0].color[0] + parents[1].color[0] + parents[2].color[0]) / 3);
+          this.color[1] = Math.round((parents[0].color[1] + parents[1].color[1] + parents[2].color[1]) / 3);
+          return this.color[2] = Math.round((parents[0].color[2] + parents[1].color[2] + parents[2].color[2]) / 3);
+        case "rgb":
+          this.color[0] = Math.min(parents[0].color[0], parents[1].color[0], parents[2].color[0]);
+          this.color[1] = Math.min(parents[0].color[0], parents[1].color[0], parents[2].color[0]);
+          return this.color[2] = Math.min(parents[0].color[0], parents[1].color[0], parents[2].color[0]);
+        case "strongest":
+          score = 0;
+          _results = [];
+          for (_i = 0, _len = parents.length; _i < _len; _i++) {
+            parent = parents[_i];
+            temp = parent.color[0] + parent.color[1] + parent.color[2];
+            if (temp > score) {
+              this.color = parent.color;
+              _results.push(score = temp);
+            } else {
+              _results.push(void 0);
+            }
+          }
+          return _results;
+          break;
+        case "lowest":
+          score = 1000;
+          _results1 = [];
+          for (_j = 0, _len1 = parents.length; _j < _len1; _j++) {
+            parent = parents[_j];
+            temp = parent.color[0] + parent.color[1] + parent.color[2];
+            if (temp < score) {
+              this.color = parent.color;
+              _results1.push(score = temp);
+            } else {
+              _results1.push(void 0);
+            }
+          }
+          return _results1;
+          break;
+        default:
+          return this.color = parents[0].color;
+      }
     };
 
     return Cell;

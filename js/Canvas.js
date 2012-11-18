@@ -4,7 +4,7 @@
   window.Canvas = (function() {
 
     function Canvas(id, pixelSize, rand) {
-      var cell, i, j, temp, val, _i, _j, _ref, _ref1;
+      var cell, i, j, temp, _i, _j, _ref, _ref1;
       this.id = id;
       this.pixelSize = pixelSize != null ? pixelSize : 5;
       this.rand = rand != null ? rand : 0.8;
@@ -18,8 +18,7 @@
       for (i = _i = 0, _ref = this.width; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         temp = [];
         for (j = _j = 0, _ref1 = this.height; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
-          val = Math.random() >= this.rand ? 1 : 0;
-          if (val === 1) {
+          if (Math.random() >= this.rand) {
             cell = new Cell();
             cell.draw(this.context, i, j, this.pixelSize);
           } else {

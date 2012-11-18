@@ -14,8 +14,7 @@ class window.Canvas
         for i in [0..@width]
             temp = []
             for j in [0..@height]
-                val = if Math.random() >= @rand then 1 else 0
-                if val == 1
+                if Math.random() >= @rand
                     cell = new Cell()
                     cell.draw @context, i, j, @pixelSize
                 else
