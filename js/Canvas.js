@@ -8,7 +8,7 @@
       this.id = id;
       this.canvas = document.getElementById(this.id);
       this.context = this.canvas.getContext('2d');
-      this.pixelSize = 5;
+      this.pixelSize = 10;
       this.width = this.canvas.width / this.pixelSize;
       this.height = this.canvas.height / this.pixelSize;
       this.map = [];
@@ -16,11 +16,12 @@
       for (i = _i = 0, _ref = this.width; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         temp = [];
         for (j = _j = 0, _ref1 = this.height; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
-          val = Math.random() >= 0.89 ? 1 : 0;
+          val = Math.random() >= 0.79 ? 1 : 0;
           temp.push(val);
         }
         this.map.push(temp);
       }
+      this.drawMap();
     }
 
     Canvas.prototype.drawMap = function() {
@@ -48,23 +49,22 @@
 
     Canvas.prototype.nextStep = function() {
       var i, j, neighbours, temp, _i, _j, _ref, _ref1;
+      this.context.fillStyle = 'white';
+      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      this.context.fillStyle = 'black';
       this.nextMap = [];
       for (i = _i = 0, _ref = this.width; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         temp = [];
         for (j = _j = 0, _ref1 = this.height; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
           neighbours = this.lookAround(i, j);
-          if (this.map[i][j] === 1) {
-            if (neighbours === 2 || neighbours === 3) {
-              temp.push(1);
-            } else {
-              temp.push(0);
-            }
+          if (neighbours === 2 && this.map[i][j] === 1) {
+            this.context.fillRect(i * this.pixelSize, j * this.pixelSize, this.pixelSize, this.pixelSize);
+            temp.push(1);
+          } else if (neighbours === 3) {
+            this.context.fillRect(i * this.pixelSize, j * this.pixelSize, this.pixelSize, this.pixelSize);
+            temp.push(1);
           } else {
-            if (neighbours === 3) {
-              temp.push(1);
-            } else {
-              temp.push(0);
-            }
+            temp.push(0);
           }
         }
         this.nextMap.push(temp);
@@ -78,8 +78,10 @@
       val = 0;
       for (i = _i = -1; _i <= 1; i = ++_i) {
         for (j = _j = -1; _j <= 1; j = ++_j) {
-          if (!(i === 0 && j === 0) && x + i >= 0 && x + i < this.width && y + j >= 0 && y + j < this.height && (this.map[x + i][y + j] != null) && this.map[x + i][y + i] === 1) {
-            val++;
+          if (!(i === 0 && j === 0) && x + i >= 0 && x + i <= this.width && y + j >= 0 && y + j <= this.height) {
+            if (this.map[x + i][y + j] === 1) {
+              val++;
+            }
           }
         }
       }

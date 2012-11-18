@@ -3,10 +3,9 @@ $ ->
     window.Cell = Cell
 
     canvas = new Canvas 'c'
-    canvas.drawMap()
 
     main = () ->
-        canvas.drawMap()
         canvas.nextStep()
 
-    setInterval main, 300
+    setInterval main, 100
+    # setTimeout main, 5000

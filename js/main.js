@@ -6,12 +6,10 @@
     window.Canvas = Canvas;
     window.Cell = Cell;
     canvas = new Canvas('c');
-    canvas.drawMap();
     main = function() {
-      canvas.drawMap();
       return canvas.nextStep();
     };
-    return setInterval(main, 300);
+    return setInterval(main, 100);
   });
 
 }).call(this);

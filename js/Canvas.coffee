@@ -3,7 +3,7 @@ class window.Canvas
         @canvas = document.getElementById @id
         @context = @canvas.getContext '2d'
 
-        @pixelSize = 5
+        @pixelSize = 10
         @width = @canvas.width / @pixelSize
         @height = @canvas.height / @pixelSize
 
@@ -12,10 +12,12 @@ class window.Canvas
         for i in [0..@width]
             temp = []
             for j in [0..@height]
-                val = if Math.random() >= 0.89 then 1 else 0
+                val = if Math.random() >= 0.79 then 1 else 0
                 temp.push val
 
             @map.push temp
+
+        @drawMap()
 
     drawMap: () ->
         # First, we blank the map
@@ -23,28 +25,32 @@ class window.Canvas
         @context.fillRect 0, 0, @canvas.width, @canvas.height
 
         @context.fillStyle = 'black'
-
         for i in [0..@width]
             for j in [0..@height]
                 if @map[i][j] == 1
                     @context.fillRect i*@pixelSize, j*@pixelSize, @pixelSize, @pixelSize
 
     nextStep: () ->
+        # First, we blank the map
+        @context.fillStyle = 'white'
+        @context.fillRect 0, 0, @canvas.width, @canvas.height
+
+        @context.fillStyle = 'black'
+
         @nextMap = []
         for i in [0..@width]
             temp = []
             for j in [0..@height]
                 neighbours = @lookAround i, j
-                if @map[i][j] == 1
-                    if neighbours == 2 || neighbours == 3
-                        temp.push 1
-                    else
-                        temp.push 0
+                
+                if neighbours == 2 && @map[i][j] == 1
+                    @context.fillRect i*@pixelSize, j*@pixelSize, @pixelSize, @pixelSize
+                    temp.push 1
+                else if neighbours == 3
+                    @context.fillRect i*@pixelSize, j*@pixelSize, @pixelSize, @pixelSize
+                    temp.push 1
                 else
-                    if neighbours == 3
-                        temp.push 1
-                    else
-                        temp.push 0
+                    temp.push 0
 
             @nextMap.push temp
 
@@ -55,14 +61,13 @@ class window.Canvas
         val = 0
         for i in [-1..1]
             for j in [-1..1]
-                if !(i==0 && j==0) && x+i >= 0 && x+i < @width && y+j >=0 && y+j <@height && @map[x+i][y+j]? && @map[x+i][y+i] == 1
-                    val++
+                
+                    
+                               
+                if !(i==0 && j==0) && x+i >= 0 && x+i <= @width && y+j >=0 && y+j <= @height
+                    
+                    if @map[x+i][y+j] == 1
+                        val++
 
         return val
-
-
-
-
-
-
 
