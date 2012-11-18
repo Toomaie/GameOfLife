@@ -1,0 +1,1 @@
+Simple Game of Life using CoffeeScript & Canvas
