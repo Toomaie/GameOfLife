@@ -2,7 +2,7 @@
 (function() {
 
   $(function() {
-    var c, canvas, main;
+    var c, canvas, canvasOnClick, getCursorPosition, main;
     window.Canvas = Canvas;
     window.Cell = Cell;
     c = document.getElementById('c');
@@ -12,7 +12,31 @@
     main = function() {
       return canvas.nextStep();
     };
-    return setInterval(main, 100);
+    setInterval(main, 100);
+    canvasOnClick = function(e) {
+      var cell, pos;
+      pos = getCursorPosition(e);
+      cell = new Cell();
+      pos.x = Math.floor(pos.x / canvas.pixelSize);
+      pos.y = Math.floor(pos.y / canvas.pixelSize);
+      canvas.map[pos.x][pos.y] = cell;
+      return cell.draw(canvas.context, pos.x, pos.y, canvas.pixelSize, canvas.pixelSize);
+    };
+    getCursorPosition = function(e) {
+      var x, y;
+      if (e.pageX || e.pageY) {
+        x = e.pageX;
+        y = e.pageY;
+      } else {
+        x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+        y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+      }
+      return {
+        x: x,
+        y: y
+      };
+    };
+    return c.addEventListener("click", canvasOnClick);
   });
 
 }).call(this);
